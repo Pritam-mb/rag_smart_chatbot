@@ -77,40 +77,4 @@ export default function ChatBox() {
     </div>
   )
 }
-import React, { useState } from 'react'
 
-export default function ChatBox() {
-  const [text, setText] = useState('')
-  const [messages, setMessages] = useState([])
-
-  async function send() {
-    if (!text) return
-    setMessages((m) => [...m, { from: 'user', text }])
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: text })
-      })
-      const data = await res.json()
-      setMessages((m) => [...m, { from: 'bot', text: data.answer || JSON.stringify(data) }])
-    } catch (err) {
-      setMessages((m) => [...m, { from: 'bot', text: 'Error contacting API' }])
-    }
-    setText('')
-  }
-
-  return (
-    <div>
-      <div style={{border:'1px solid #ddd',padding:10,height:300,overflow:'auto'}}>
-        {messages.map((m,i) => (
-          <div key={i} style={{margin:6}}><b>{m.from}:</b> {m.text}</div>
-        ))}
-      </div>
-      <div style={{marginTop:8}}>
-        <input value={text} onChange={(e)=>setText(e.target.value)} style={{width:'70%'}} />
-        <button onClick={send} style={{marginLeft:8}}>Send</button>
-      </div>
-    </div>
-  )
-}

@@ -15,14 +15,4 @@ export default function App() {
     </div>
   )
 }
-import React from 'react'
-import ChatBox from './components/ChatBox'
 
-export default function App() {
-  return (
-    <div style={{padding:20,fontFamily:'sans-serif'}}>
-      <h1>Aarogya-Sahayak</h1>
-      <ChatBox />
-    </div>
-  )
-}
