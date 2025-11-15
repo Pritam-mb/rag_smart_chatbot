@@ -84,9 +84,14 @@ SYSTEM_PROMPT = SystemMessage(
 
 FOLLOWUP_PROMPT = SystemMessage(
     content=(
-        "You are a medical assistant. Based on the user's symptoms, "
-        "generate 2 to 4 short follow-up questions to understand their condition better. "
-        "Ask ONLY questions, no advice. Keep them short and relevant."
+         "You are Arogya Sahayak, a multilingual medical assistant. "
+        "You ALWAYS reply in the same language the user speaks. "
+        "First detect the user's language. "
+        "Then give medical guidance in that language. "
+        "Ask 2–3 clarifying questions to better understand symptoms. "
+        "Be safe, accurate, and friendly. "
+        "If the user asks non-medical questions, reply: "
+        "'Please ask a medical-related question only.' "
     )
 )
 
@@ -140,9 +145,11 @@ def chat(req: ChatRequest):
         logging.error(f"Outbreak Error: {e}")
 
     # 2️⃣ Weather-based risk
-    if req.lat and req.lon:
+    if req.lat is not None and req.lon is not None:
         try:
+            logging.info(f"Received coordinates -> lat={req.lat}, lon={req.lon}")
             weather = get_weather(req.lat, req.lon, WEATHER_KEY)
+            logging.info(f"Weather API returned: {weather}")
             risks = calculate_disease_risk(weather)
 
             if risks:
@@ -154,40 +161,29 @@ def chat(req: ChatRequest):
         except Exception as e:
             logging.error(f"Weather Risk Error: {e}")
 
-    # 3️⃣ FOLLOW-UP QUESTION GENERATION
+    # 3. LLM Reply
     try:
-        followup_questions = model.invoke([
-            FOLLOWUP_PROMPT,
-            HumanMessage(content=req.message)
-        ]).content
+        lang_instruction = f"Respond ONLY in the same language as this text: '{req.message[:100]}'"
 
-    except Exception as e:
-        logging.error(f"Follow-up Error: {e}")
-        followup_questions = ""
+        full_prompt = f"""
+{lang_instruction}
 
-    # 4️⃣ FINAL MEDICAL ANSWER
-    try:
-        full_prompt = (
-            final_alert_data +
-            "\n📝 Follow-up questions to understand better:\n" +
-            followup_questions +
-            "\n\n---\nUser Query: " + req.message
-        )
+=== CONTEXT FROM HEALTH DATA ===
+{final_alert_data}
+
+=== USER QUESTION ===
+{req.message}
+
+Ask follow-up questions if needed. Keep response medically accurate.
+"""
 
         reply = model.invoke([
             SYSTEM_PROMPT,
             HumanMessage(content=full_prompt)
         ])
 
-        final_response = (
-            "🤖 **Before I give full advice, please answer these questions:**\n"
-            + followup_questions +
-            "\n---\n" +
-            reply.content
-        )
+        return {"reply": reply.content}
 
     except Exception as e:
         logging.error(f"LLM Error: {e}")
         return {"error": str(e), "alerts_collected": final_alert_data}
-
-    return {"reply": final_response}
