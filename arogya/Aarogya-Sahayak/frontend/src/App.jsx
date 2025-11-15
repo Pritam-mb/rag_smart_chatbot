@@ -11,7 +11,7 @@ export default function App() {
       <main className="app-main">
         <ChatBox />
       </main>
-      <footer className="app-footer">Built with ❤️ — Frontend only (does not change backend)</footer>
+      {/* <footer className="app-footer">Built with ❤️ — Frontend only (does not change backend)</footer> */}
     </div>
   )
 }
