@@ -1,0 +1,57 @@
+# Project-level .gitignore for Aarogya-Sahayak
+
+# Python cache and artifacts
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environments
+venv/
+.venv/
+backend/venv/
+
+# Python packaging
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+.logs/
+
+# Environment files (do NOT commit secrets)
+.env
+.env.*
+local.env
+
+# IDEs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test / coverage
+.pytest_cache/
+.tox/
+coverage.xml
+.coverage
+htmlcov/
+
+# Node / frontend
+frontend/node_modules/
+node_modules/
+frontend/dist/
+frontend/build/
+
+# Chroma / vectorstore persistence (if used)
+vectorstore/
+**/chromadb/
+
+# Other
+*.sqlite3
+*.db
+
+# Keep package manifests and requirements so a collaborator can install deps
+# (do not ignore `requirements.txt`, `package.json`, `package-lock.json`, or `yarn.lock`)
