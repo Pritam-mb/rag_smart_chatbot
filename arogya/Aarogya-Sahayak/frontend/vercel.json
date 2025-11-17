@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://grumpy-crabs-allow.loca.lt/:path*"
+      "destination": "https://unwritable-charis-overcuriously.ngrok-free.dev/:path*"
     }
   ],
   "headers": [
